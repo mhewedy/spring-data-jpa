@@ -11,19 +11,19 @@ pipeline {
     }
     
     stages {
+        stage("test: baseline") {
+            agent {
+                docker {
+                    image 'adoptopenjdk/openjdk8:latest'
+                    args '-v $HOME/.m2:/root/.m2'
+                }
+            }
+            steps {
+                sh "./mvnw clean dependency:list test -Dsort -Dbundlor.enabled=false -B"
+            }
+        }
         stage("Test") {
             parallel {
-                stage("test: baseline") {
-                    agent {
-                        docker {
-                            image 'adoptopenjdk/openjdk8:latest'
-                            args '-v $HOME/.m2:/root/.m2'
-                        }
-                    }
-                    steps {
-                        sh "./mvnw clean dependency:list test -Dsort -Dbundlor.enabled=false -B"
-                    }
-                }
                 stage("test: hibernate-next") {
                     agent {
                         docker {
